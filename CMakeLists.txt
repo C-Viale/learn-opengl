@@ -15,6 +15,7 @@ find_package(OpenGL REQUIRED)
 add_executable(main 
   src/main.cpp
   src/glad.c
+  src/shader/shader.cpp
 )
 
 # Link libraries
