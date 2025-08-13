@@ -31,16 +31,35 @@ unsigned int compileVertexShader() {
   return vertexShader;
 }
 
-unsigned int compileFragmentShader() {
-  const char* fragmentShaderSource =
-      "#version 330 core\n"
-      "out vec4 FragColor;\n"
-      "void main() {\n"
-      "  FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-      "}";
-
+unsigned int compileFragmentShader(SHADER_COLOR color) {
   unsigned int fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-  glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+
+  if (color == SHADER_COLOR::red) {
+    const char* fragmentShaderSource =
+        "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main() {\n"
+        "  FragColor = vec4(1.0f, 0.0f, 0.0f, 1.0f);\n"
+        "}";
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  } else if (color == SHADER_COLOR::blue) {
+    const char* fragmentShaderSource =
+        "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main() {\n"
+        "  FragColor = vec4(0.0f, 0.0f, 1.0f, 1.0f);\n"
+        "}";
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  } else {
+    const char* fragmentShaderSource =
+        "#version 330 core\n"
+        "out vec4 FragColor;\n"
+        "void main() {\n"
+        "  FragColor = vec4(0.0f, 1.0f, 0.0f, 1.0f);\n"
+        "}";
+    glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
+  }
+
   glCompileShader(fragmentShader);
 
   int success;
@@ -56,20 +75,17 @@ unsigned int compileFragmentShader() {
   return fragmentShader;
 }
 
-unsigned int buildShaderProgram() {
+unsigned int buildColorShaderProgram(SHADER_COLOR color) {
   unsigned int vertexShader = compileVertexShader();
-  unsigned int fragmentShader = compileFragmentShader();
+  unsigned int fragmentShader = compileFragmentShader(color);
 
   unsigned int shaderProgram = glCreateProgram();
 
-  // attach shaders in the right sequence
   glAttachShader(shaderProgram, vertexShader);
   glAttachShader(shaderProgram, fragmentShader);
 
-  glLinkProgram(shaderProgram);  // attach shader to the program object
-  glUseProgram(shaderProgram);   // use the shader program in subsequent calls
+  glLinkProgram(shaderProgram);
 
-  // delete shader objects
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
