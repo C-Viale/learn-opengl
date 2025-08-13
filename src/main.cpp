@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-#include "shader/shader.h"
+#include "shader.h"
 
 void framebufferSizeCallback(GLFWwindow* window, int width, int height);
 void processInput(GLFWwindow* window);
@@ -42,56 +42,29 @@ int main() {
     return -1;
   }
 
-  unsigned int blueShaderProgram = buildColorShaderProgram(SHADER_COLOR::blue);
-  unsigned int redShaderProgram = buildColorShaderProgram(SHADER_COLOR::red);
-  unsigned int greenShaderProgram = buildColorShaderProgram(SHADER_COLOR::green);
+  Shader defaultShader("/Users/caio/Development/opengl/src/shaders/default/vertex.glsl", "/Users/caio/Development/opengl/src/shaders/default/fragment.glsl");
+  Shader testShader("/Users/caio/Development/opengl/src/shaders/test/vertex.glsl", "/Users/caio/Development/opengl/src/shaders/test/fragment.glsl");
 
-  float firstTriangleVertices[] = {
-      -0.25f, 0.0f, 0.0f,  // 0 left
-      0.25f, 0.0f, 0.0f,   // 1 right
-      0.0f, 0.5f, 0.0f,    // 2 top
+  float vertices[] = {
+      0.0f, 0.5f, 0.0f,    // top
+      -0.5f, -0.5f, 0.0f,  // left
+      0.5f, -0.5f, 0.0f,   // right
   };
+  unsigned int VAO, VBO;
 
-  float secondTriangleVertices[] = {
-      -0.25f, 0.0f, 0.0f,  // 0 top
-      -0.5f, -0.5f, 0.0f,  // 1 left
-      0.0f, -0.5f, 0.0f,   // 2 right
-  };
-
-  float thirdTriangleVertices[] = {
-      0.25f, 0.0f, 0.0f,  // 0 top
-      0.0f, -0.5f, 0.0f,  // 1 left
-      0.5f, -0.5f, 0.0f,  // 1 right
-  };
-
-  unsigned int VAOs[3], VBOs[3];
-
-  glGenVertexArrays(3, VAOs);
-  glGenBuffers(3, VBOs);
+  glGenVertexArrays(1, &VAO);
+  glGenBuffers(1, &VBO);
 
   /*
      The Vertex Array Object (VAO) is bound like the Vertex Buffer Object (VBO).
      Any vertex attribute calls after the bound will be stored inside the VAO.
      Because of this, whe bind the VAO before the VBO
   */
-
-  glBindVertexArray(VAOs[0]);                                                                           // 1. bind VAO first
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);                                                               // 2. bind VBO to GL_ARRAY_BUFFER
-  glBufferData(GL_ARRAY_BUFFER, sizeof(firstTriangleVertices), firstTriangleVertices, GL_STATIC_DRAW);  // 3. set vertex data to the buffer
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);                         // 4. configure vertex attributes
-  glEnableVertexAttribArray(0);                                                                         // 5. enable vertex attribute at location 0
-
-  glBindVertexArray(VAOs[1]);
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(secondTriangleVertices), secondTriangleVertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
-
-  glBindVertexArray(VAOs[2]);
-  glBindBuffer(GL_ARRAY_BUFFER, VBOs[2]);
-  glBufferData(GL_ARRAY_BUFFER, sizeof(thirdTriangleVertices), thirdTriangleVertices, GL_STATIC_DRAW);
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-  glEnableVertexAttribArray(0);
+  glBindVertexArray(VAO);                                                        // 1. bind VAO first
+  glBindBuffer(GL_ARRAY_BUFFER, VBO);                                            // 2. bind VBO to GL_ARRAY_BUFFER
+  glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);     // 3. set vertex data to the buffer
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);  // 4. configure vertex attributes
+  glEnableVertexAttribArray(0);                                                  // 5. enable vertex attribute at location 0
 
   // glBindBuffer(GL_ARRAY_BUFFER, 0);
   // glBindVertexArray(0);
@@ -107,16 +80,9 @@ int main() {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(blueShaderProgram);
-    glBindVertexArray(VAOs[0]);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+    testShader.use();
 
-    glUseProgram(redShaderProgram);
-    glBindVertexArray(VAOs[1]);
-    glDrawArrays(GL_TRIANGLES, 0, 3);
-
-    glUseProgram(greenShaderProgram);
-    glBindVertexArray(VAOs[2]);
+    glBindVertexArray(VAO);
     glDrawArrays(GL_TRIANGLES, 0, 3);
 
     glBindVertexArray(0);
@@ -125,11 +91,9 @@ int main() {
     glfwPollEvents();         // this checks if any events are triggered, updates the window state and execute callbacks
   }
 
-  glDeleteVertexArrays(3, VAOs);
-  glDeleteVertexArrays(3, VBOs);
-  glDeleteProgram(blueShaderProgram);
-  glDeleteProgram(redShaderProgram);
-  glDeleteProgram(greenShaderProgram);
+  glDeleteVertexArrays(1, &VAO);
+  glDeleteVertexArrays(1, &VBO);
+  glDeleteProgram(defaultShader.ID);
   glfwTerminate();
   return 0;
 }
