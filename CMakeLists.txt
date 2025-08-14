@@ -16,6 +16,7 @@ add_executable(main
   src/main.cpp
   src/glad.c
   src/shader.cpp
+  src/stb_image.cpp
 )
 
 # Link libraries
