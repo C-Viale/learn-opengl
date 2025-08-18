@@ -87,3 +87,5 @@ Temporary Items
 .idea/
 *.iml
 *.iws
+
+libraries/
