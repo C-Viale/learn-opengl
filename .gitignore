@@ -85,6 +85,7 @@ Temporary Items
 
 # IDE files
 .idea/
+.cache/
 *.iml
 *.iws
 
