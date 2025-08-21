@@ -16,7 +16,7 @@ find_package(OpenGL REQUIRED)
 add_executable(main 
   src/main.cpp
   src/glad.c
-  src/shader.cpp
+  src/classes/shader.cpp
   src/stb_image.cpp
 )
 
